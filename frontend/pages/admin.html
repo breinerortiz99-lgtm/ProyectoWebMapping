@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Administración · LuzFlorencia</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-minimap@3.6.1/dist/Control.MiniMap.min.css"
+    />
+    <link rel="stylesheet" href="../css/admin.css" />
+  </head>
+  <body>
+    <!-- Administrative dashboard: all data endpoints are restricted to the administrator role. -->
+    <header class="admin-topbar">
+      <a class="admin-brand" href="/"
+        ><span>✦</span>
+        <div>
+          <strong>LuzFlorencia</strong><small>Panel de administración</small>
+        </div></a
+      >
+      <div class="admin-account">
+        <span class="admin-badge">ADMIN</span
+        ><strong id="adminName">Administrador</strong
+        ><button id="adminLogout" type="button">Cerrar sesión</button>
+      </div>
+    </header>
+    <main class="admin-page">
+      <section class="admin-heading">
+        <div>
+          <p class="eyebrow">CENTRO DE CONTROL</p>
+          <h1>Reportes y actividad ciudadana</h1>
+          <p>Supervisa solicitudes, usuarios y eventos del sistema.</p>
+        </div>
+        <button id="refreshDashboard" type="button" class="refresh-button">
+          ↻ Actualizar información
+        </button>
+      </section>
+      <section class="stat-grid" aria-label="Resumen administrativo">
+        <article class="stat-card">
+          <span>Reportes recibidos</span><strong id="totalReports">—</strong
+          ><small>Todos los estados</small>
+        </article>
+        <article class="stat-card">
+          <span>Usuarios activos</span><strong id="totalUsers">—</strong
+          ><small><b id="usersToday">—</b> registrados hoy</small>
+        </article>
+        <article class="stat-card amber">
+          <span>Por revisar</span><strong id="pendingReports">—</strong
+          ><small>Nuevos y en revisión</small>
+        </article>
+        <article class="stat-card green">
+          <span>Resueltos</span><strong id="resolvedReports">—</strong
+          ><small>Atendidos por el equipo</small>
+        </article>
+      </section>
+      <section class="panel map-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">DISTRIBUCIÓN GEOGRÁFICA</p>
+            <h2>Mapa de reportes y capas de Florencia</h2>
+            <p>
+              Selecciona cualquier reporte del mapa o de la tabla para
+              centrarlo.
+            </p>
+          </div>
+          <span id="adminMapStatus" class="map-status">Cargando mapa…</span>
+        </div>
+        <div
+          id="adminMap"
+          aria-label="Mapa administrativo de reportes y capas"
+        ></div>
+      </section>
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">SEGUIMIENTO</p>
+            <h2>Todos los reportes</h2>
+            <p id="reportCount">Cargando reportes…</p>
+          </div>
+          <label class="filter-label"
+            >Filtrar estado<select id="statusFilter">
+              <option value="">Todos</option>
+              <option>RECIBIDO</option>
+              <option>EN_REVISION</option>
+              <option>RESUELTO</option>
+              <option>DESCARTADO</option>
+            </select></label
+          >
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Luminaria</th>
+                <th>Daño</th>
+                <th>Reportado por</th>
+                <th>Estado</th>
+                <th>Ubicación</th>
+              </tr>
+            </thead>
+            <tbody id="reportRows">
+              <tr>
+                <td colspan="6">Cargando reportes…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">TRAZABILIDAD</p>
+            <h2>Auditoría del sistema</h2>
+            <p>
+              Inicios de sesión, accesos, búsquedas, reportes y análisis
+              recientes.
+            </p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="audit-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Usuario</th>
+                <th>Acción</th>
+                <th>Detalle</th>
+                <th>Dirección IP</th>
+              </tr>
+            </thead>
+            <tbody id="auditRows">
+              <tr>
+                <td colspan="5">Cargando actividad…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <footer class="admin-footer">
+        LuzFlorencia · Herramientas administrativas
+      </footer>
+    </main>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="https://unpkg.com/leaflet-minimap@3.6.1/dist/Control.MiniMap.min.js"></script>
+    <script src="../js/admin.js"></script>
+  </body>
+</html>

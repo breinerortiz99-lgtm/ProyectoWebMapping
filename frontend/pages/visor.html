@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#102a43" />
+    <title>LuzFlorencia | Alumbrado público</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-minimap@3.6.1/dist/Control.MiniMap.min.css"
+    />
+    <link rel="stylesheet" href="../css/visor.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand-mark" aria-hidden="true">✦</div>
+      <div class="brand-copy">
+        <strong>LuzFlorencia</strong
+        ><span>Alumbrado público · Florencia, Caquetá</span>
+      </div>
+      <div class="connection">
+        <span class="status-dot"></span
+        ><span id="connectionText">Conectando con el servicio</span>
+      </div>
+      <div class="user-menu">
+        <span id="userNameDisplay">Cuenta</span>
+        <button id="logoutButton" type="button">Cerrar sesión</button>
+      </div>
+    </header>
+    <main class="layout">
+      <aside class="sidebar">
+        <section class="intro">
+          <p class="eyebrow">GESTIÓN CIUDADANA</p>
+          <h1>Encuentra una luminaria</h1>
+          <p>Consulta su estado, reporta un daño y encuentra cómo llegar.</p>
+        </section>
+        <form id="searchForm" class="search-box">
+          <label for="lampCode">Código de luminaria</label>
+          <div class="search-row">
+            <input
+              id="lampCode"
+              placeholder="Ej. código de la lámpara"
+              autocomplete="off"
+              required
+            /><button aria-label="Buscar luminaria">⌕</button>
+          </div>
+          <small
+            >Escribe el código que aparece en la placa de la luminaria.</small
+          >
+        </form>
+        <section id="lampCard" class="lamp-card hidden" aria-live="polite">
+          <div class="card-heading">
+            <div>
+              <p class="eyebrow">LUMINARIA SELECCIONADA</p>
+              <h2 id="lampTitle">—</h2>
+            </div>
+            <span id="lampStatus" class="status-pill">—</span>
+          </div>
+          <dl id="lampDetails" class="details"></dl>
+          <button id="reportButton" class="button primary full">
+            ＋ Reportar un daño
+          </button>
+          <button id="routeButton" class="button secondary full">
+            ↗ Trazar ruta desde aquí
+          </button>
+        </section>
+        <section class="destination">
+          <p class="eyebrow">DESTINO DE LA RUTA</p>
+          <h2>Tu residencia o la Alcaldía</h2>
+          <label for="destination">Etiqueta del destino (opcional)</label>
+          <div class="search-row">
+            <input id="destination" placeholder="Ej. Mi residencia" /><button
+              id="destinationSearch"
+              aria-label="Marcar destino en el mapa"
+            >
+              ⌖
+            </button>
+          </div>
+          <button id="cityHallButton" class="text-button">
+            Usar Alcaldía de Florencia como destino
+          </button>
+          <button id="currentLocationButton" class="text-button">
+            ◎ Usar mi ubicación actual
+          </button>
+          <button id="chooseOnMap" class="text-button">
+            Marcar ubicación manualmente en el mapa
+          </button>
+          <p class="hint">
+            Al usar tu ubicación, el navegador pedirá permiso. Se comparte solo
+            con esta app local para calcular la ruta; también puedes ubicarla
+            manualmente.
+          </p>
+        </section>
+        <section class="analysis">
+          <p class="eyebrow">RESUMEN DEL ALUMBRADO</p>
+          <button id="proximityButton" class="button secondary full">
+            ◎ Analizar luminarias cerca de mí (100 m)
+          </button>
+          <p id="proximityResult" class="hint" aria-live="polite">
+            Pulsa para solicitar tu ubicación actual. Esta app local la usa para buscar y resaltar luminarias a 100 m.
+          </p>
+          <div id="statusSummary" class="summary-grid">
+            <span class="loading">Cargando estados…</span>
+          </div>
+          <p class="hint">
+            El resumen se calcula a partir de los registros publicados.
+          </p>
+        </section>
+        <footer>Proyecto académico · Sistema de información geográfica</footer>
+      </aside>
+      <section class="map-area" aria-label="Mapa de luminarias de Florencia">
+        <div class="map-heading">
+          <div>
+            <p class="eyebrow">MAPA INTERACTIVO</p>
+            <h2>Alumbrado de Florencia</h2>
+          </div>
+          <div id="mapMessage" class="map-message">
+            Selecciona una luminaria en el buscador
+          </div>
+        </div>
+        <div id="map"></div>
+        <div class="map-tip">
+          <span>ⓘ</span> Acércate al mapa o pulsa un grupo para explorar sus
+          luminarias. Usa el panel para activar las capas individuales o el
+          grupo completo de capas.
+        </div>
+      </section>
+    </main>
+    <dialog id="reportDialog">
+      <form id="reportForm" method="dialog">
+        <button
+          type="button"
+          class="dialog-close"
+          id="closeDialog"
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+        <p class="eyebrow">REPORTE CIUDADANO</p>
+        <h2>Reportar daño</h2>
+        <p class="dialog-subtitle">
+          Luminaria <strong id="reportLampCode"></strong>
+        </p>
+        <label for="damageType">Tipo de daño</label>
+        <select id="damageType" required>
+          <option value="">Selecciona una opción</option>
+          <option>Apagada</option>
+          <option>Parpadea</option>
+          <option>Luz tenue</option>
+          <option>Poste o cable dañado</option>
+          <option>Otro</option>
+        </select>
+        <label for="reportDescription">Descripción</label
+        ><textarea
+          id="reportDescription"
+          rows="3"
+          maxlength="1000"
+          placeholder="Cuéntanos qué observaste"
+          required
+        ></textarea>
+        <label for="reportContact">Contacto (opcional)</label
+        ><input
+          id="reportContact"
+          maxlength="120"
+          placeholder="Teléfono o correo"
+        />
+        <p class="hint">
+          El reporte queda vinculado a esta luminaria para su seguimiento.
+        </p>
+        <button id="submitReport" class="button primary full" type="submit">
+          Enviar reporte
+        </button>
+        <p id="reportFeedback" class="form-feedback" aria-live="polite"></p>
+      </form>
+    </dialog>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="https://unpkg.com/supercluster@8.0.0/dist/supercluster.min.js"></script>
+    <script src="https://unpkg.com/leaflet-minimap@3.6.1/dist/Control.MiniMap.min.js"></script>
+    <script src="../js/visor.js"></script>
+  </body>
+</html>
+
